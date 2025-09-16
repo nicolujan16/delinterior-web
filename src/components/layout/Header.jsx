@@ -68,9 +68,9 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
+      <header className="bg-white sticky shadow-lg top-0 z-50 transition-all duration-300">
         {/* fecha y tiempo */}
-        {/* <AnimatePresence>
+        <AnimatePresence>
           {isTopBarVisible && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
@@ -105,7 +105,7 @@ const Header = () => {
               </div>
             </motion.div>
           )}
-        </AnimatePresence> */}
+        </AnimatePresence>
 
         <div className="container mx-auto px-4">
           <div className={`relative flex items-center justify-center py-4 ${isScrolled ? "md:hidden" : ""}`}>
