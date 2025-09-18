@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -17,12 +17,13 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import LogoDI from '@/assets/logo4di.png'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isTopBarVisible, setIsTopBarVisible] = useState(true);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isNavbarSticky, setIsNavbarSticky] = useState(false);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -30,13 +31,13 @@ const Header = () => {
     }, 1000);
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 0);
-      
-      if (scrollPosition > 1) {
-        setIsTopBarVisible(false);
-      } else {
-        setIsTopBarVisible(true);
+      if (headerRef.current) {
+        const headerBottom = headerRef.current.getBoundingClientRect().bottom;
+        if (window.scrollY > (headerBottom + 80)) {
+          setIsNavbarSticky(true);
+        } else {
+          setIsNavbarSticky(false);
+        }
       }
     };
 
@@ -68,47 +69,36 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white sticky shadow-lg top-0 z-50 transition-all duration-300">
-        {/* fecha y tiempo */}
-        <AnimatePresence>
-          {isTopBarVisible && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between py-2 border-b border-gray-200">
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{currentTime.toLocaleTimeString('es-ES')}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{currentTime.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    </div>
-                    <div className="weather-widget px-3 py-1 rounded-full text-white text-xs flex items-center space-x-1">
-                      <Sun className="w-3 h-3" />
-                      <span>24°C</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Facebook className="w-4 h-4 text-blue-600 social-icon cursor-pointer" onClick={handleFeatureClick} />
-                    <Twitter className="w-4 h-4 text-blue-400 social-icon cursor-pointer" onClick={handleFeatureClick} />
-                    <Instagram className="w-4 h-4 text-pink-600 social-icon cursor-pointer" onClick={handleFeatureClick} />
-                    <Youtube className="w-4 h-4 text-red-600 social-icon cursor-pointer" onClick={handleFeatureClick} />
-                  </div>
+      <header ref={headerRef} className="bg-white z-40">
+        <div className="bg-white hidden sm:flex">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between py-2 border-b border-gray-200">
+              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <div className="flex items-center space-x-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{currentTime.toLocaleTimeString('es-ES')}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{currentTime.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+                <div className="weather-widget px-3 py-1 rounded-full text-white text-xs flex items-center space-x-1">
+                  <Sun className="w-3 h-3" />
+                  <span>24°C</span>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className="flex items-center space-x-3">
+                <Facebook className="w-4 h-4 text-blue-600 social-icon cursor-pointer" onClick={handleFeatureClick} />
+                <Twitter className="w-4 h-4 text-blue-400 social-icon cursor-pointer" onClick={handleFeatureClick} />
+                <Instagram className="w-4 h-4 text-pink-600 social-icon cursor-pointer" onClick={handleFeatureClick} />
+                <Youtube className="w-4 h-4 text-red-600 social-icon cursor-pointer" onClick={handleFeatureClick} />
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="container mx-auto px-4">
-          <div className={`relative flex items-center justify-center py-4 ${isScrolled ? "md:hidden" : ""}`}>
+          <div className={`relative flex items-center justify-center py-4`}>
             <div className="absolute left-0 md:hidden">
               <Button 
                 variant="ghost" 
@@ -119,26 +109,27 @@ const Header = () => {
               </Button>
             </div>
             
-            <div>
-              <div 
-                initial={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link to="/">
-                  <div className="text-3xl font-serif font-bold text-blue-600">
-                    delinterior.com.ar
-                  </div>
-                </Link>
+            <Link to="/">
+              <div className="text-3xl font-serif font-bold text-blue-600 flex gap-2 items-center justify-center sm:gap-4">
+                <div className='overflow-hidden h-[40px]'>
+                  <img src={LogoDI} alt='DI' className='h-[50px]' />
+                </div>
+                <p className='hidden text-[2rem] [@media(min-width:420px)]:flex sm:text-[2.5rem]'>
+                  delinterior.com.ar
+                </p>
               </div>
-            </div>
+            </Link>
           </div>
-
+        </div>
+      </header>
+      
+      <div className={`bg-white z-50 shadow-lg ${isNavbarSticky ? 'fixed top-0 left-0 right-0' : 'relative'}`}>
+        <div className="container mx-auto px-4">
           <nav className="hidden md:block border-t border-gray-200">
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center space-x-8">
                 <AnimatePresence>
-                  {isScrolled && (
+                  {isNavbarSticky && (
                     <motion.div
                       initial={{ opacity: 0, x: -20, width: 0 }}
                       animate={{ opacity: 1, x: 0, width: 'auto' }}
@@ -146,8 +137,10 @@ const Header = () => {
                       transition={{ duration: 0.4, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <Link to="/" className="text-lg font-serif font-bold text-blue-600 mr-8 whitespace-nowrap">
-                        delinterior.com.ar
+                      <Link to="/" className="text-lg font-serif font-bold text-blue-600 mr-8 whitespace-nowrap flex justify-center items-center w-full">
+                        <div className='overflow-hidden h-[40px] w-full flex justify-center items-center '>
+                          <img src={LogoDI} alt='DI' className='h-[50px] mt-1' />
+                        </div>
                       </Link>
                     </motion.div>
                   )}
@@ -180,7 +173,7 @@ const Header = () => {
                   </NavLink>
                 ))}
               </div>
-              <div className="flex items-center bg-gray-100 rounded-full px-3 py-1.5">
+              {/* <div className="flex items-center bg-gray-100 rounded-full px-3 py-1.5">
                 <Search className="w-4 h-4 text-gray-500 mr-2" />
                 <input 
                   type="text" 
@@ -188,7 +181,7 @@ const Header = () => {
                   className="bg-transparent outline-none text-sm w-24 focus:w-32 transition-all"
                   onClick={handleFeatureClick}
                 />
-              </div>
+              </div> */}
             </div>
           </nav>
         </div>
@@ -235,7 +228,7 @@ const Header = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </header>
+      </div>
     </>
   );
 };

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { User, Clock } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { sponsorsMain } from '../../data/sponsors';
 
 const FeaturedNewsCard = ({ article, isMain = false }) => {
 
@@ -24,7 +25,7 @@ const FeaturedNewsCard = ({ article, isMain = false }) => {
             {article.title}
           </h2>
           {isMain && (
-            <p className="mt-2 text-s text-gray-800">
+            <p className="mt-2 text-s text-gray-800 line-clamp-3">
               {article.summary?.split('\n\n')[0]}
             </p>
           )}
@@ -77,7 +78,7 @@ const FeaturedNews = ({ news }) => {
       initial="hidden"
       animate="visible"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-14">
+      <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-8">
         <div className="lg:col-span-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
             <div className="md:col-span-2 h-full">
@@ -89,16 +90,25 @@ const FeaturedNews = ({ news }) => {
             </div>
           </div>
         </div>
+
+        {/* Espacio Auspiciantes */}
         <div className="lg:col-span-1 flex flex-col">
           <div
-            className="w-full bg-gray-50 border-2 border-dashed border-gray-300 cursor-pointer hover:border-blue-500 transition-colors flex-grow flex items-center justify-center p-4 rounded-md"
+            className="w-full flex-grow flex justify-around rounded-md gap-12 pt-12 lg:flex-col"
             style={{ minHeight: '150px' }}
-            onClick={handleSponsorClick}
           >
-            <div className="text-center text-gray-500">
-              <h3 className="font-bold text-lg">Auspiciantes</h3>
-              <p className="text-sm">Espacio publicitario</p>
-            </div>
+            {
+              sponsorsMain.map(sp => (
+                <a href={sp.linkTo} target='_blank' className='w-[25%] h-full flex justify-center items-center lg:w-full'> 
+                <img 
+                  src={sp.imgURL}
+                  alt={sp.marca}
+                  key={sp.marca} 
+                  className='w-fit h-auto' />
+                </a>
+              ))
+            }
+            
           </div>
         </div>
       </div>

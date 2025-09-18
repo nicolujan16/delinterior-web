@@ -27,6 +27,11 @@ const NewsCard = ({ article, index }) => {
 		});
 	};
 
+	const spanClass = index === 3 ? 'col-span-3' 
+	: index === 4 ? 'col-span-3' 
+	: index === 8 ? 'col-span-6' : ''
+
+
 	return (
 		<motion.article
 			key={article.id}
@@ -34,9 +39,9 @@ const NewsCard = ({ article, index }) => {
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={{ once: true }}
 			transition={{ duration: 0.6, delay: 0.1 * (index % 3) }}
-			className="group news-card-body flex flex-col border-b-2 border-blue-300"
+			className={`lg:${spanClass} col-span-2 group news-card-body flex flex-col border-b-2 border-blue-300 h-fit`}
 		>
-			<Link to={`/noticia/${article.id}`} className="flex flex-col h-full">
+			<Link to={`/noticia/${article.id}`} className="flex flex-col h-fit">
 				<div className="p-4">
 					<h2 className="text-2xl font-serif font-bold mb-2 line-clamp-3 text-gray-800 group-hover:text-blue-600 transition-colors h-24">
 						{article.title}
@@ -45,7 +50,7 @@ const NewsCard = ({ article, index }) => {
 				<div className="aspect-video mt-auto">
 					{article.image ? (
 						<img
-							className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+							className="aspect-video w-full object-cover group-hover:scale-105 transition-transform duration-500"
 							alt={article.title}
 							src={article.image} />
 					) : (
@@ -69,7 +74,9 @@ const NewsCard = ({ article, index }) => {
 
 const AllNewsSection = ({ news }) => (
 	<div className="space-y-6 ">
-		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4" 
+		style={{gridAutoRows: "minmax(200px, auto)"}}
+		>
 			{news.map((article, index) => (
 				<NewsCard key={article.id} article={article} index={index} />
 			))}
