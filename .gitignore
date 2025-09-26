@@ -24,9 +24,6 @@ build/
 .env.local
 .env.*.local
 
-# Firebase config (archivos con claves sensibles)
-src/FirebaseConfig.js
-
 # Mac system files
 .DS_Store
 
