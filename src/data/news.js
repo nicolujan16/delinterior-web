@@ -31,7 +31,6 @@ export const sliderNews = [
     readTime: "5 min",
     views: "2.3k",
     image: "https://www.delinterior.com.ar/sitio/2018/img/noticias/31633_1757377712.jpg",
-    isBreaking: true
   },
   {
     id: 2,
@@ -43,7 +42,6 @@ export const sliderNews = [
     readTime: "3 min",
     views: "1.8k",
     image: "https://www.delinterior.com.ar/sitio/2018/img/noticias/31702_1757973040.jpg",
-    isBreaking: false
   },
   {
     id: 3,
@@ -55,7 +53,6 @@ export const sliderNews = [
     readTime: "4 min",
     views: "1.5k",
     image: "https://www.delinterior.com.ar/sitio/2018/img/noticias/31689_1757930560.jpg",
-    isBreaking: false
   }
 ];
 

@@ -7,11 +7,14 @@ import {
   Star,
   Clapperboard,
   Radio,
+  LogOut,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "../../context/AuthProvider"
+import Swal from 'sweetalert2'
 
 const DashboardCard = ({ to, icon: Icon, title, delay, onClick }) => {
   const content = (
@@ -42,26 +45,44 @@ const DashboardCard = ({ to, icon: Icon, title, delay, onClick }) => {
   );
 };
 
-
 const AdminDashboard = () => {
-    const { toast } = useToast();
-    const navigate = useNavigate();
-    const [isLive, setIsLive] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isLive, setIsLive] = useState(false);
+  const { logout } = useAuth()
 
-    const handleLiveToggle = (checked) => {
-        setIsLive(checked);
-        toast({
-            title: `Transmisión ${checked ? "activada" : "desactivada"}`,
-            description: `El estado "En Vivo" ha sido actualizado.`,
-        });
-    };
+  const handleLiveToggle = (checked) => {
+      setIsLive(checked);
+      toast({
+          title: `Transmisión ${checked ? "activada" : "desactivada"}`,
+          description: `El estado "En Vivo" ha sido actualizado.`,
+      });
+  };
 
-    const dashboardItems = [
-        { to: '/admin/noticias/nueva', icon: FilePlus, title: 'Alta de Noticia' },
-        { to: '/admin/noticias-en-tapa', icon: Newspaper, title: 'Noticias en Tapa' },
-        { to: '/admin/destacadas', icon: Star, title: 'Noticias Destacadas' },
-        { to: '/admin/recortes', icon: Clapperboard, title: 'Añadir Clip' },
-    ];
+  const dashboardItems = [
+      { to: '/admin/noticias/nueva', icon: FilePlus, title: 'Alta de Noticia' },
+      { to: '/admin/noticias-en-tapa', icon: Newspaper, title: 'Noticias en Tapa' },
+      { to: '/admin/destacadas', icon: Star, title: 'Noticias Destacadas' },
+      { to: '/admin/recortes', icon: Clapperboard, title: 'Añadir Clip' }
+  ];
+
+  const handleLogOutSwal = () => {
+   Swal.fire({
+      title: "¿Cerrar sesión?",
+      text: "Vas a salir del panel de administración",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout(); // acá llamás a tu función de Firebase
+        Swal.fire("Sesión cerrada", "Has salido correctamente", "success");
+      }
+    });
+  }
 
   return (
     <div className="space-y-8">
@@ -74,7 +95,7 @@ const AdminDashboard = () => {
         {dashboardItems.map((item, index) => (
           <DashboardCard key={item.to} {...item} delay={index * 0.1} />
         ))}
-         <motion.div
+        <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: 0.4 }}
@@ -100,6 +121,26 @@ const AdminDashboard = () => {
                     <Switch id="live-toggle" checked={isLive} onCheckedChange={handleLiveToggle} />
                   </div>
               </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="h-full"
+            onClick={ handleLogOutSwal }
+        >
+          <Card className="text-center hover:shadow-lg transition-shadow h-full flex flex-col justify-center cursor-pointer">
+            <CardContent className="p-6">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                  <LogOut className="w-8 h-8 text-blue-600" />
+                </div>
+              </div>
+              <p className="text-lg font-semibold text-gray-800">Cerrar Sesión</p>
+            </CardContent>
           </Card>
         </motion.div>
       </div>

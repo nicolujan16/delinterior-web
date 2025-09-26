@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import HomePage from '@/pages/HomePage';
@@ -18,11 +16,14 @@ import AdminCoverNews from '@/pages/admin/AdminCoverNews';
 import AdminClips from '@/pages/admin/AdminClips';
 import AdminLive from '@/pages/admin/AdminLive';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
+import { AuthProvider } from './context/AuthProvider';
+import AdminRoute from './context/AdminRoute';
+import { AdminNewsProvider } from './context/AdminNewsContext';
 
 function App() {
-  
   return (
     <Routes>
+      {/* Rutas Publicas */}
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="locales" element={<CategoryPage categoryId="local" categoryName="Locales" />} />
@@ -34,21 +35,81 @@ function App() {
         <Route path="noticia/:id" element={<NewsArticlePage />} />
       </Route>
       
-      <Route path="/admin" element={<AdminLogin />} />
+      {/* Admin LogIn */}
+      <Route path="/admin" element={
+        <AuthProvider>
+          <AdminLogin />  
+        </AuthProvider>
+      } />
       
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="noticias" element={<AdminNews />} />
-        <Route path="noticias/nueva" element={<AdminNewsForm />} />
-        <Route path="noticias/editar/:id" element={<AdminNewsForm />} />
-        <Route path="noticias-en-tapa" element={<AdminCoverNews />} />
-        <Route path="destacadas" element={<AdminFeatured />} />
-        <Route path="recortes" element={<AdminClips />} />
-        <Route path="vivo" element={<AdminLive />} />
-        <Route path="analiticas" element={<AdminAnalytics />} />
-        <Route path="configuracion" element={<AdminSettings />} />
-        <Route path="tapa" element={<Navigate to="/admin/noticias-en-tapa" />} />
-        <Route path="*" element={<Navigate to="/admin/dashboard" />} />
+      {/* Rutas Admin */}
+      <Route path="/admin" element={
+        <AuthProvider>
+          <AdminNewsProvider>
+            <AdminLayout />
+          </AdminNewsProvider>
+        </AuthProvider>  
+      }>
+        <Route path="dashboard" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>  
+        } />
+        <Route path="noticias" element={
+          <AdminRoute>
+            <AdminNews />  
+          </AdminRoute>
+        } />
+        <Route path="noticias/nueva" element={
+          <AdminRoute>
+            <AdminNewsForm />  
+          </AdminRoute>
+        } />
+        <Route path="noticias/editar/:id" element={
+          <AdminRoute>
+            <AdminNewsForm />  
+          </AdminRoute>
+        } />
+        <Route path="noticias-en-tapa" element={
+          <AdminRoute>
+            <AdminCoverNews />  
+          </AdminRoute>
+        } />
+        <Route path="destacadas" element={
+          <AdminRoute>
+            <AdminFeatured />  
+          </AdminRoute>
+        } />
+        <Route path="recortes" element={
+          <AdminRoute>
+            <AdminClips />  
+          </AdminRoute>
+        } />
+        <Route path="vivo" element={
+          <AdminRoute>
+            <AdminLive />  
+          </AdminRoute>
+        } />
+        <Route path="analiticas" element={
+          <AdminRoute>
+            <AdminAnalytics />  
+          </AdminRoute>
+        } />
+        <Route path="configuracion" element={
+          <AdminRoute>
+            <AdminSettings />  
+          </AdminRoute>
+        } />
+        <Route path="tapa" element={
+          <AdminRoute>
+            <Navigate to="/admin/noticias-en-tapa" />  
+          </AdminRoute>
+        }/>
+        <Route path="*" element={
+          <AdminRoute>
+            <Navigate to="/admin/dashboard" />
+          </AdminRoute> 
+        }/>
       </Route>
     </Routes>
   );

@@ -5,12 +5,16 @@ import { PlayCircle, Clock, Eye, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { highlightClips } from '@/data/clips';
+import { TikTokEmbed } from 'react-social-media-embed';
+
+import { useEffect } from "react";
+
 
 const ClipsPage = () => {
   const handleFeatureClick = () => {
     toast({
       title: "🚧 Esta funcionalidad aún no está implementada",
-      description: "¡Pero no te preocupes! Puedes solicitarla en tu próximo prompt! 🚀",
+      description: "",
       duration: 3000,
     });
   };
@@ -59,13 +63,22 @@ const ClipsPage = () => {
           </Button>
         </div>
 
+
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {highlightClips.map((clip) => (
+        
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@bigchungus_oficial/video/7539714442649423110" width={325} />
+          </div>
+                  
+
+        
+
+          {/* {highlightClips.map((clip) => (
             <motion.div
               key={clip.id}
               className="bg-white rounded-xl shadow-lg overflow-hidden news-card-hover cursor-pointer group"
@@ -100,7 +113,7 @@ const ClipsPage = () => {
                 </div>
               </div>
             </motion.div>
-          ))}
+          ))} */}
         </motion.div>
       </div>
     </>

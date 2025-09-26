@@ -94,17 +94,17 @@ const FeaturedNews = ({ news }) => {
         {/* Espacio Auspiciantes */}
         <div className="lg:col-span-1 flex flex-col">
           <div
-            className="w-full flex-grow flex justify-around rounded-md gap-12 pt-12 lg:flex-col"
+            className="w-full flex-grow flex justify-around rounded-md gap-1 lg:gap-12 pt-12 lg:flex-col"
             style={{ minHeight: '150px' }}
           >
             {
               sponsorsMain.map(sp => (
-                <a href={sp.linkTo} target='_blank' className='w-[25%] h-full flex justify-center items-center lg:w-full'> 
+                <a href={sp.linkTo} target='_blank' className='w-[33%] h-full flex justify-center items-center lg:w-full'> 
                 <img 
                   src={sp.imgURL}
                   alt={sp.marca}
                   key={sp.marca} 
-                  className='w-fit h-auto' />
+                  className='w-full h-auto' />
                 </a>
               ))
             }
