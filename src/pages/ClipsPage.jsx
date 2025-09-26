@@ -72,10 +72,37 @@ const ClipsPage = () => {
         >
         
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@bigchungus_oficial/video/7539714442649423110" width={325} />
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
           </div>
-                  
-
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
+          </div>
+        
+        
         
 
           {/* {highlightClips.map((clip) => (
