@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,18 +10,31 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import Swal from 'sweetalert2';
 
-const AddClipModal = ({ open, onOpenChange }) => {
-  const { toast } = useToast();
+const AddClipModal = ({ open, onOpenChange, addTikTok }) => {
+  const [tiktokInput, setTiktokInput] = useState()
 
-  const handleUpload = (e) => {
+  const handleUpload = async (e) => {
     e.preventDefault();
-    toast({
-      title: "Recorte subido (simulado)",
-      description: "El recorte desde el enlace de TikTok se está procesando.",
-    });
-    onOpenChange(false);
+    try{
+      await addTikTok(tiktokInput)
+      Swal.fire({
+        icon: "success",
+        title: "Recorte subido exitosamente"
+      }).then(() => {
+        window.location.reload()
+      })
+      onOpenChange(false);
+    }catch(err){
+      Swal.fire({
+        icon:"error",
+        title: "Error subiendo el recorte",
+        text: err
+      })
+    }
+
+    
   };
 
   return (
@@ -40,8 +53,10 @@ const AddClipModal = ({ open, onOpenChange }) => {
             </Label>
             <Input
               id="tiktok-link"
-              placeholder="https://www.tiktok.com/@user/video/..."
+              placeholder="https://www.tiktok.com/@mañanasdemierda/video/..."
               className="col-span-3"
+              value={tiktokInput}
+              onChange={(e) => {setTiktokInput(e.target.value)}}
               required
             />
           </div>

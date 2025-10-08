@@ -1,4 +1,3 @@
-import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Clock, Newspaper, User } from 'lucide-react';
@@ -93,7 +92,6 @@ const SponsorPlaceholder = ({ delay = 0.3 }) => {
 
 const CategoryPage = ({ categoryId, categoryName }) => {
   const newsForCategory = allNewsData[categoryId] || [];
-  const largeNews = newsForCategory.slice(0, 3);
   const mediumNews = newsForCategory.slice(3, 6);
   const restNews = newsForCategory.slice(6);
 
@@ -111,10 +109,10 @@ const CategoryPage = ({ categoryId, categoryName }) => {
         <title>{categoryName} - Diario Del Interior</title>
         <meta name="description" content={`Últimas noticias de la categoría ${categoryName}. Mantente informado con Diario Del Interior.`} />
       </Helmet>
-      <div className="w-full space-y-12 py-8">
+      <div className="w-full space-y-12 py-4">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-serif font-bold text-gray-800 mb-8">{categoryName}</h1>
-          {largeNews.length > 0 && <FeaturedNews news={largeNews} />}
+          <h1 className="text-4xl font-serif font-bold text-gray-800 mb-4">{categoryName}</h1>
+          <FeaturedNews categoria={categoryId}/>
         </div>
 
         <div className="container mx-auto px-4">

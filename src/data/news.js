@@ -3,13 +3,13 @@ export const categories = [
   { id: 'todas', name: 'Todas', color: 'gray' },
   { id: 'politica', name: 'Política', color: 'red' },
   { id: 'deportes', name: 'Deportes', color: 'green' },
-  { id: 'economia', name: 'Economía', color: 'blue' },
-  { id: 'cultura', name: 'Cultura', color: 'purple' },
+  { id: 'mundo', name: 'Mundo', color: 'blue' },
+  { id: 'locales', name: 'Locales', color: 'yellow' },
+  { id: 'interior', name: 'Interior', color: 'orange' },
+  { id: 'nacional', name: 'Nacional', color: 'teal' },
+  { id: 'educación', name: 'Cultura', color: 'purple' },
   { id: 'tecnologia', name: 'Tecnología', color: 'indigo' },
-  { id: 'salud', name: 'Salud', color: 'pink' },
-  { id: 'local', name: 'Local', color: 'yellow' },
-  { id: 'provincial', name: 'Provincial', color: 'orange' },
-  { id: 'nacional', name: 'Nacional', color: 'teal' }
+  { id: 'salud', name: 'Salud', color: 'pink' }
 ];
 
 export const breakingNews = [

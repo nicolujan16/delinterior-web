@@ -18,12 +18,49 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import LogoDI from '@/assets/logo4di.png'
+import { useUserNews } from '../../context/UserNewsContext'
+import Swal from 'sweetalert2';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isNavbarSticky, setIsNavbarSticky] = useState(false);
   const headerRef = useRef(null);
+  const { getCategories } = useUserNews()
+  const [categorias, setCategorias] = useState([])
+
+  // CATEGORIAS
+  useEffect(() => {
+    const fetchCats = async () => {
+      try{
+        let cats = await getCategories()
+        let newCats = [
+          { to: "/", text: "Inicio" }
+        ]
+        cats.forEach((cat) => {
+          if(cat.value !== 'Principales'){
+            newCats.push({
+              to: `/${cat.value}`,
+              text: cat.label
+            })
+          }
+        })
+
+        setCategorias([
+          ...newCats,
+          { to: "/recortes-destacados", text: "Recortes" },
+          { to: "/en-vivo", text: "En Vivo" }
+        ])
+      }catch(err){
+        Swal.fire({
+          icon: "error",
+          title: "Error obteniendo categorias",
+          text: err
+        })
+      }
+    }
+    fetchCats()
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -59,10 +96,6 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", text: "Inicio" },
-    { to: "/locales", text: "Locales" },
-    { to: "/interior", text: "Interior" },
-    { to: "/nacionales", text: "Nacionales" },
-    { to: "/politica", text: "Política" },
     { to: "/recortes-destacados", text: "Recortes" },
     { to: "/en-vivo", text: "En Vivo" },
   ];
@@ -146,7 +179,9 @@ const Header = () => {
                   )}
                 </AnimatePresence>
 
-                {navLinks.map(link => (
+                {
+                categorias.length > 0 &&
+                categorias.map(link => (
                   <NavLink
                     key={link.to}
                     to={link.to}
@@ -171,7 +206,8 @@ const Header = () => {
                       link.text
                     )}
                   </NavLink>
-                ))}
+                ))
+}
               </div>
               {/* <div className="flex items-center bg-gray-100 rounded-full px-3 py-1.5">
                 <Search className="w-4 h-4 text-gray-500 mr-2" />

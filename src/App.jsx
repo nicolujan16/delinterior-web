@@ -19,17 +19,39 @@ import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import { AuthProvider } from './context/AuthProvider';
 import AdminRoute from './context/AdminRoute';
 import { AdminNewsProvider } from './context/AdminNewsContext';
+import { useUserNews } from './context/UserNewsContext'
+import { useEffect, useState } from 'react';
 
 function App() {
+
+  const { getCategories } = useUserNews()
+  const [categorias, setCategorias] = useState([])
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      let cats = await getCategories()
+      setCategorias(cats)
+    }
+    fetchCats()
+  },[])
+
+
   return (
     <Routes>
       {/* Rutas Publicas */}
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={
+        <Layout />  
+      }>
         <Route index element={<HomePage />} />
-        <Route path="locales" element={<CategoryPage categoryId="local" categoryName="Locales" />} />
+        {
+          categorias.map(cat => (
+            <Route key={cat.value} path={`${cat.value}`} element={<CategoryPage categoryId={`${cat.value}`} categoryName={`${cat.label}`} />} />
+          ))
+        }
+        {/* <Route path="locales" element={<CategoryPage categoryId="local" categoryName="Locales" />} />
         <Route path="interior" element={<CategoryPage categoryId="provincial" categoryName="Interior" />} />
         <Route path="nacionales" element={<CategoryPage categoryId="nacional" categoryName="Nacionales" />} />
-        <Route path="politica" element={<CategoryPage categoryId="politica" categoryName="Política" />} />
+        <Route path="politica" element={<CategoryPage categoryId="politica" categoryName="Política" />} /> */}
         <Route path="en-vivo" element={<LivePage />} />
         <Route path="recortes-destacados" element={<ClipsPage />} />
         <Route path="noticia/:id" element={<NewsArticlePage />} />
@@ -75,7 +97,7 @@ function App() {
             <AdminCoverNews />  
           </AdminRoute>
         } />
-        <Route path="destacadas" element={
+        <Route path="editables" element={
           <AdminRoute>
             <AdminFeatured />  
           </AdminRoute>

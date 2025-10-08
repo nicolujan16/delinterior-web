@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -130,7 +130,7 @@ const HomePage = () => {
 			</Helmet>
 			<div className="w-full space-y-12 py-8 bg-white">
 				<div className="container mx-auto px-4">
-					<FeaturedNews news={sliderNews} />
+					<FeaturedNews/>
 				</div>
 
 				<div className="container mx-auto px-4 border-b-2 border-t-2 border-blue-500 py-4">

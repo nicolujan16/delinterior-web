@@ -1,0 +1,152 @@
+import { collection, documentId, getDoc, getDocs, limit, orderBy, query, startAfter, where, doc} from "firebase/firestore";
+import { createContext, useContext, useState } from "react";
+import { db } from "../FirebaseConfig";
+
+const UserNewsContext = createContext();
+export function useUserNews() { return useContext(UserNewsContext); }
+
+const TAPAS_ID = 'noticiasTapaPorCategoria'
+
+export function UserNewsProvider ({ children }) {
+
+  const getUserNewsPagination = async ({ page = 0, pageSize = 20, category = "all" }) => {
+    try{
+      const noticiasRef = collection(db, "noticias");
+
+      // Si hay categoria, filtramos por categoria
+      let baseQuery = noticiasRef;
+      if (category && category !== "all" && category !== "Principales") {
+        baseQuery = query(noticiasRef, where("categoria", "==", category));
+      }
+
+      // Obtener cantidad total acorde al filtro (para calcular páginas)
+      const countSnapshot = await getCountFromServer(baseQuery);
+      const totalNews = countSnapshot.data().count || 0;
+      const paginasTotales = Math.max(1, Math.ceil(totalNews / pageSize));
+
+      // Query final con orden y límite
+      let q = query(baseQuery, orderBy("createdAt", "desc"), limit(pageSize));
+
+      // Si page > 0 necesitamos startAfter; para eso traemos el último doc de la página anterior
+      if (page > 0) {
+        // traemos page * pageSize docs con el mismo filtro y orden, para obtener el último
+        const prevPageQuery = query(baseQuery, orderBy("createdAt", "desc"), limit(page * pageSize));
+        const prevPageLastDocSnap = await getDocs(prevPageQuery);
+        const lastDoc = prevPageLastDocSnap.docs[prevPageLastDocSnap.docs.length - 1];
+        if (lastDoc) {
+          q = query(baseQuery, orderBy("createdAt", "desc"), startAfter(lastDoc), limit(pageSize));
+        } else {
+          // si no existe lastDoc (p. ej. page demasiado alto), devolvemos vacío
+          setLoadingNews(false);
+          return [[], paginasTotales];
+        }
+      }
+
+      const snap = await getDocs(q);
+      const news = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+      setLoadingNews(false);
+      return [news, paginasTotales];
+    }catch(err){
+      throw new Error(err)
+    }
+
+
+  }
+
+  const getCoverNewsByCategory = async ({ category = 'principales' }) => {
+    try {
+      // Paso 1: traer los IDs guardados en noticiasTapaPorCategoria
+      let IDs = await getNoticiasEnTapaID(category); // ej: ["id1", "id2", "id3"]
+
+      if (!IDs || IDs.length === 0) {
+        console.warn(`No se encontraron IDs para la categoría ${category}`);
+        return [];
+      }
+
+      // Paso 2: query con "in" (máx 10 IDs por query)
+      const noticiasRef = collection(db, "noticias");
+      const q = query(noticiasRef, where(documentId(), "in", IDs));
+      const snap = await getDocs(q);
+
+      // Paso 3: mapear los docs
+      const noticias = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Paso 4: devolver el array final
+      let noticiasOrdenadas = []
+      noticiasOrdenadas[0] = noticias.filter(not => not.id == IDs[0])[0]
+      noticiasOrdenadas[1] = noticias.filter(not => not.id == IDs[1])[0]
+      noticiasOrdenadas[2] = noticias.filter(not => not.id == IDs[2])[0]
+      return noticiasOrdenadas ; // array de objetos noticia
+    } catch (error) {
+      console.error("Error obteniendo las noticias en tapa:", error);
+      throw error;
+    }
+  };
+
+  const getNoticiasEnTapaID = async (category) => {
+    try {
+      let tapasRef = doc(db, "editable", TAPAS_ID);
+      const snapshot = await getDoc(tapasRef);
+      if (snapshot.exists()) {
+        const data = snapshot.data()
+        return data[category]; 
+      } else {
+        console.warn("El documento no existe");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error obteniendo tapas por categoría:", error);
+      throw error;
+    }
+  };
+
+  const getNewByID = async (id) => {
+    try {
+      const docRef = doc(db, "noticias", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+      } else {
+        throw new Error("Noticia no encontrada")
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const getCategories = async () => {
+    try{
+
+      const editableDocRef = doc(db, "editable", "categorias");
+      const editableSnap = await getDoc(editableDocRef);
+      
+      if (editableSnap.exists()) {
+        const data = editableSnap.data();
+        const cats = data?.categorias ?? data?.categories ?? [];
+        
+        // Asegurarnos que devuelve siempre un array
+        return Array.isArray(cats) ? cats : [];
+      }
+    }catch(err){
+      throw new Error(err)
+    }
+      
+  }
+
+  const value = {
+    getUserNewsPagination,
+    getCoverNewsByCategory,
+    getNoticiasEnTapaID,
+    getNewByID,
+    getCategories
+  }
+
+
+  return <UserNewsContext.Provider value={value}>{children}</UserNewsContext.Provider>;
+
+}

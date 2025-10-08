@@ -13,3 +13,5 @@ export const sponsorsMain = [
     imgURL: "https://www.delinterior.com.ar/sitio/2018/img/banner/arauco.gif"
   }
 ]
+
+
