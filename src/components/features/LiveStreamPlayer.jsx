@@ -34,14 +34,23 @@ const LiveStreamPlayer = () => {
       className="bg-white rounded-2xl shadow-xl overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-5">
-    
           <div className="md:col-span-3">
             <div className="relative aspect-video bg-black group cursor-pointer">
               { 
                 streamingIsLive ?
-                <>
-                  <YouTubeEmbed url={streamingLink} className='w-full h-full'></YouTubeEmbed>
-                </>
+                <div className='absolute inset-0 w-full h-full'>
+                  <YouTubeEmbed 
+                    url={streamingLink}
+                    width="100%"
+                    height="100%"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      border: "none",
+                    }}
+                  />
+                </div>
                 :
                 <>
                   <div className='bg-[url("https://ugc.production.linktr.ee/79141616-ea4f-44db-9f4c-f4559ef88e9a_Portada-Youtube.png")] bg-s absolute inset-0 flex items-center justify-center bg-[length:100%_100%]'>
