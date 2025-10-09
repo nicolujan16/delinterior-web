@@ -4,6 +4,7 @@ import { User, Clock } from 'lucide-react';
 import { sponsorsMain } from '../../data/sponsors';
 import { useEffect, useState } from 'react';
 import { useUserNews } from '../../context/UserNewsContext';
+import Swal from 'sweetalert2';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -14,7 +15,6 @@ const containerVariants = {
   };
 
 const FeaturedNewsCard = ({ article, isMain = false, isLoading = false }) => {
-
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
@@ -93,11 +93,13 @@ const FeaturedNewsCard = ({ article, isMain = false, isLoading = false }) => {
 };
 
 const FeaturedNews = ({ categoria = 'Principales' }) => {
-  const { getCoverNewsByCategory } = useUserNews()
+  const { getCoverNewsByCategory, getAuspiciantes } = useUserNews()
   const [noticias, setNoticias] = useState([])
   const [loading, setLoading] = useState(true)
+  const [sponsors, setSponsors] = useState([])
   const [error, setError] = useState(false)
 
+  // Fetch Noticias y Sponsors
   useEffect(() => {
     const fetchNoticias = async () => {
       try{
@@ -109,10 +111,21 @@ const FeaturedNews = ({ categoria = 'Principales' }) => {
         setError(err)
       }
     }
-
-    fetchNoticias()
+    const fetchSponsors = async () => {
+      try{
+        let auspiciantes = await getAuspiciantes()
+        setSponsors(auspiciantes.main)
+      }catch(err){
+        Swal.fire({
+          icon: "error",
+          title: "Error obteniendo sponsors",
+          text: err
+        })
+      }
+    }
+    fetchSponsors();
+    fetchNoticias();
   },[categoria])
-
 
   return (
     <motion.div
@@ -151,8 +164,16 @@ const FeaturedNews = ({ categoria = 'Principales' }) => {
             style={{ minHeight: '150px' }}
           >
             {
-              sponsorsMain.map(sp => (
-                <a href={sp.linkTo} key={sp.marca} target='_blank' className='w-[33%] h-full flex justify-center items-center lg:w-full'> 
+              sponsors.map(sp => (
+                <a 
+                  href={sp.linkTo} 
+                  key={sp.marca} 
+                  target='_blank' 
+                  className='w-[33%] h-full flex justify-center items-center lg:w-full'
+                  onClick={(e) => {
+                    if(sp.linkTo == '') e.preventDefault()
+                  }}  
+                > 
                 <img 
                   src={sp.imgURL}
                   alt={sp.marca}

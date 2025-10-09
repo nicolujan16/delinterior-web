@@ -161,7 +161,6 @@ const AdminNewsForm = () => {
         setCopete(data.copete || data.summary || '');
         setBody(data.body || '');
         setCategory(data.categoria);
-        console.log(data.categoria)
         setActive(data.estado ? data.estado === 'activo' : (data.active ?? true));
         if (data.publishedAt && data.publishedAt.toDate) {
           setDate(data.publishedAt.toDate().toISOString().slice(0, 10));
@@ -338,7 +337,7 @@ const AdminNewsForm = () => {
         slug: slugify(title || '') || docId,
         readTime: estimateReadTimeFromHtml(body),
         updatedAt: serverTimestamp(),
-        fechaDeSubida: new Date().toISOString().split('T')[0], // "2025-08-08"
+        fechaDeSubida: date, // "2025-08-08"
         inTapa: false
       };
 

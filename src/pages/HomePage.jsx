@@ -16,6 +16,7 @@ import { toast } from '@/components/ui/use-toast';
 import { localNews, politicalNews, provincialNews, nationalNews, sliderNews } from '@/data/news';
 import FeaturedNews from '@/components/features/NewsSlider';
 import LiveStreamPlayer from '@/components/features/LiveStreamPlayer';
+import { useUserNews } from '../context/UserNewsContext';
 
 const NewsCard = ({ article, index }) => {
 	const formatDate = (dateString) => {
@@ -44,15 +45,15 @@ const NewsCard = ({ article, index }) => {
 			<Link to={`/noticia/${article.id}`} className="flex flex-col h-fit">
 				<div className="p-4">
 					<h2 className="text-2xl font-serif font-bold mb-2 line-clamp-3 text-gray-800 group-hover:text-blue-600 transition-colors h-24">
-						{article.title}
+						{article.titulo}
 					</h2>
 				</div>
 				<div className="aspect-video mt-auto">
-					{article.image ? (
+					{article.imgURL ? (
 						<img
 							className="aspect-video w-full object-cover group-hover:scale-105 transition-transform duration-500"
-							alt={article.title}
-							src={article.image} />
+							alt={article.titulo}
+							src={article.imgURL} />
 					) : (
 						<div className="w-full h-full bg-gray-200"></div>
 					)}
@@ -60,11 +61,11 @@ const NewsCard = ({ article, index }) => {
 				<div className="flex items-center justify-between text-xs text-gray-500 p-4 border-t border-gray-200 mt-auto">
 					<div className="flex items-center space-x-2">
 						<User className="w-3 h-3" />
-						<span>{article.author}</span>
+						<span>{article.author.name}</span>
 					</div>
 					<div className="flex items-center space-x-1">
 						<Clock className="w-3 h-3" />
-						<span>{formatDate(article.date)}</span>
+						<span>{formatDate(article.fechaDeSubida)}</span>
 					</div>
 				</div>
 			</Link>
@@ -72,7 +73,7 @@ const NewsCard = ({ article, index }) => {
 	);
 };
 
-const AllNewsSection = ({ news }) => (
+export const AllNewsSection = ({ news }) => (
 	<div className="space-y-6 ">
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4" 
 		style={{gridAutoRows: "minmax(200px, auto)"}}
@@ -84,35 +85,61 @@ const AllNewsSection = ({ news }) => (
 	</div>
 );
 
-const SponsorPlaceholder = ({ delay = 0.3 }) => {
-	const handleSponsorClick = () => {
-		toast({
-			title: "🚧 Espacio para auspiciantes",
-			description: "Este es un espacio reservado para publicidad. ¡Puedes solicitar la integración de auspiciantes!",
-			duration: 3000,
-		});
-	};
-
+const SponsorPlaceholder = ({ delay = 0.3, auspiciantes }) => {
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 20 }}
 			whileInView={{ opacity: 1, x: 0 }}
 			viewport={{ once: true }}
 			transition={{ duration: 0.6, delay }}
-			className="w-full bg-gray-50 border-2 border-dashed border-gray-300 cursor-pointer hover:border-blue-500 transition-colors flex items-center justify-center p-4 rounded-md"
+			className="w-full cursor-pointer hover:border-blue-500 transition-colors flex items-center justify-center p-4 rounded-md"
 			style={{ minHeight: '200px' }}
-			onClick={handleSponsorClick}
 		>
-			<div className="text-center text-gray-500">
-				<h3 className="font-bold text-lg">Auspiciantes</h3>
-				<p className="text-sm">Espacio publicitario</p>
+			<div className="text-center text-gray-500 flex flex-col gap-20">
+				{
+					auspiciantes.map(sp => (
+						<a 
+							href={sp.linkTo == '' ? '#' : sp.linkTo}
+							key={sp.marca}
+							className='w-[33%] h-full flex justify-center items-center lg:w-full'
+							onClick={(e) => {
+								if(sp.linkTo == '') e.preventDefault()
+							}}	
+						> 
+							<img 
+								src={sp.imgURL}
+								alt={sp.marca}
+								className='w-full h-auto' />
+						</a>
+					))
+				}
 			</div>
 		</motion.div>
 	);
 };
 
 const HomePage = () => {
-	const allNews = [...localNews, ...politicalNews, ...provincialNews, ...nationalNews];
+	const [noticias, setNoticias] = useState([])
+	const [sponsorsSec, setSponsorsSec] = useState([])
+	const [totalPages, setTotalPages] = useState(1)
+
+	const { getUserNewsPagination, getAuspiciantes } = useUserNews({})
+
+	// fetch noticias
+	useState(() => {
+		const fetchNews = async () => {
+			let [notis, paginasTotales] = await getUserNewsPagination({page: 0, pageSize: 20, category: 'all'})
+			setNoticias(notis)
+			setTotalPages(paginasTotales)
+		}
+
+		const fetchSponsors = async () => {
+			let ausp = await getAuspiciantes()
+			setSponsorsSec(ausp.secondary)
+		}
+		fetchSponsors()
+		fetchNews()
+	}, [])
 
 	const handleFeatureClick = () => {
 		toast({
@@ -140,11 +167,11 @@ const HomePage = () => {
 				<div className="container mx-auto px-4">
 					<div className="grid grid-cols-5 lg:grid-cols-5 gap-x-8 gap-y-12">
 						<main className="lg:col-span-4 col-span-5">
-							<AllNewsSection news={allNews} />
+							<AllNewsSection news={noticias} />
 						</main>
 
-						<aside className="lg:col-span-1 col-span-5 space-y-8 lg:sticky top-8 self-start">
-							<SponsorPlaceholder delay={0.4} />
+						<aside className="lg:col-span-1 col-span-5 space-y-8 top-8 self-start">
+							<SponsorPlaceholder delay={0.4} auspiciantes={sponsorsSec} />
 
 							<motion.div
 								initial={{ opacity: 0, x: 20 }}

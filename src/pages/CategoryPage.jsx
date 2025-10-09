@@ -5,11 +5,16 @@ import { toast } from '@/components/ui/use-toast';
 import { localNews, politicalNews, provincialNews, nationalNews } from '@/data/news';
 import FeaturedNews from '@/components/features/NewsSlider';
 import { Button } from '@/components/ui/button';
+import { useUserNews } from '../context/UserNewsContext';
+import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import { AllNewsSection } from './HomePage';
 
 const allNewsData = {
   local: localNews,
   provincial: provincialNews,
-  nacional: nationalNews,
+  "Nacionales": nationalNews,
   politica: politicalNews,
 };
 
@@ -95,6 +100,46 @@ const CategoryPage = ({ categoryId, categoryName }) => {
   const mediumNews = newsForCategory.slice(3, 6);
   const restNews = newsForCategory.slice(6);
 
+  const [noticiasCategoria, setNoticiasCategoria] = useState([])
+  const [categoryTotalPages, setCategoryTotalPages] = useState(1)
+  const { getUserNewsPagination, getCoverNewsByCategory } = useUserNews()
+  const navigate = useNavigate()
+
+  // getNews
+  useEffect(() => {
+    const fetchCategoryNews = async () => {
+      try {
+        let noticiasInTapa = await getCoverNewsByCategory({ category: categoryId });
+        let [notis, paginasTotales] = await getUserNewsPagination({
+          page: 0,
+          pageSize: 20,
+          category: categoryId
+        });
+
+        // Obtenemos los IDs de las noticias que están en tapa
+        const idsEnTapa = noticiasInTapa.map(n => n.id);
+
+        // Filtramos las que no estén en tapa
+        const noticiasFiltradas = notis.filter(noticia => !idsEnTapa.includes(noticia.id));
+
+        setNoticiasCategoria(noticiasFiltradas);
+        setCategoryTotalPages(paginasTotales);
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          icon: "error",
+          title: "Error obteniendo noticias de esta categoría",
+          text: err
+        }).then(() => {
+          navigate("/");
+        });
+      }
+    };
+
+    fetchCategoryNews()
+
+  }, [categoryId])
+
   const handleFeatureClick = () => {
     toast({
       title: "🚧 Esta funcionalidad aún no está implementada",
@@ -116,11 +161,14 @@ const CategoryPage = ({ categoryId, categoryName }) => {
         </div>
 
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-12">
-            <main className="lg:col-span-9 space-y-12">
-              {mediumNews.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-8 gap-y-12">
+            <main className="lg:col-span-4 space-y-12">
+              <AllNewsSection news={noticiasCategoria}></AllNewsSection>
+
+              
+              {/* {mediumNews.length > 0 && (
                 <section>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {mediumNews.map((article, index) => (
                       <NewsCard key={article.id} article={article} index={index} size="medium" />
                     ))}
@@ -140,10 +188,10 @@ const CategoryPage = ({ categoryId, categoryName }) => {
                     ))}
                   </div>
                 </section>
-              )}
+              )} */}
             </main>
 
-            <aside className="lg:col-span-3 space-y-8 lg:sticky top-28 self-start">
+            <aside className="lg:col-span-1 space-y-8 lg:sticky top-28 self-start">
               <SponsorPlaceholder delay={0.4} />
               <motion.div
                 initial={{ opacity: 0, x: 20 }}

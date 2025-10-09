@@ -1,5 +1,5 @@
-import { collection, documentId, getDoc, getDocs, limit, orderBy, query, startAfter, where, doc} from "firebase/firestore";
-import { createContext, useContext, useState } from "react";
+import { collection, documentId, getDoc, getDocs, limit, orderBy, query, startAfter, where, doc, getCountFromServer} from "firebase/firestore";
+import { createContext, useContext } from "react";
 import { db } from "../FirebaseConfig";
 
 const UserNewsContext = createContext();
@@ -9,6 +9,8 @@ const TAPAS_ID = 'noticiasTapaPorCategoria'
 
 export function UserNewsProvider ({ children }) {
 
+
+  // ------------ NOTICIAS ------------ 
   const getUserNewsPagination = async ({ page = 0, pageSize = 20, category = "all" }) => {
     try{
       const noticiasRef = collection(db, "noticias");
@@ -25,27 +27,23 @@ export function UserNewsProvider ({ children }) {
       const paginasTotales = Math.max(1, Math.ceil(totalNews / pageSize));
 
       // Query final con orden y límite
-      let q = query(baseQuery, orderBy("createdAt", "desc"), limit(pageSize));
+      let q = query(baseQuery, orderBy("fechaDeSubida", "desc"), limit(pageSize));
 
       // Si page > 0 necesitamos startAfter; para eso traemos el último doc de la página anterior
       if (page > 0) {
         // traemos page * pageSize docs con el mismo filtro y orden, para obtener el último
-        const prevPageQuery = query(baseQuery, orderBy("createdAt", "desc"), limit(page * pageSize));
+        const prevPageQuery = query(baseQuery, orderBy("fechaDeSubida", "desc"), limit(page * pageSize));
         const prevPageLastDocSnap = await getDocs(prevPageQuery);
         const lastDoc = prevPageLastDocSnap.docs[prevPageLastDocSnap.docs.length - 1];
         if (lastDoc) {
-          q = query(baseQuery, orderBy("createdAt", "desc"), startAfter(lastDoc), limit(pageSize));
+          q = query(baseQuery, orderBy("fechaDeSubida", "desc"), startAfter(lastDoc), limit(pageSize));
         } else {
-          // si no existe lastDoc (p. ej. page demasiado alto), devolvemos vacío
-          setLoadingNews(false);
           return [[], paginasTotales];
         }
       }
 
       const snap = await getDocs(q);
       const news = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-
-      setLoadingNews(false);
       return [news, paginasTotales];
     }catch(err){
       throw new Error(err)
@@ -57,7 +55,8 @@ export function UserNewsProvider ({ children }) {
   const getCoverNewsByCategory = async ({ category = 'principales' }) => {
     try {
       // Paso 1: traer los IDs guardados en noticiasTapaPorCategoria
-      let IDs = await getNoticiasEnTapaID(category); // ej: ["id1", "id2", "id3"]
+      let categoriaLowered = category.toLowerCase()
+      let IDs = await getNoticiasEnTapaID(categoriaLowered); // ej: ["id1", "id2", "id3"]
 
       if (!IDs || IDs.length === 0) {
         console.warn(`No se encontraron IDs para la categoría ${category}`);
@@ -82,7 +81,6 @@ export function UserNewsProvider ({ children }) {
       noticiasOrdenadas[2] = noticias.filter(not => not.id == IDs[2])[0]
       return noticiasOrdenadas ; // array de objetos noticia
     } catch (error) {
-      console.error("Error obteniendo las noticias en tapa:", error);
       throw error;
     }
   };
@@ -119,6 +117,8 @@ export function UserNewsProvider ({ children }) {
     }
   }
 
+  // ------------ CATEGORIAS ------------
+
   const getCategories = async () => {
     try{
 
@@ -138,12 +138,46 @@ export function UserNewsProvider ({ children }) {
       
   }
 
+  // ------------ SPONSORS ------------
+
+  async function getAuspiciantes() {
+    try{
+      let docRef = doc(db, 'editable', 'auspiciantes')
+      let docSnap = await getDoc(docRef)
+
+      if(docSnap.exists()){
+        return docSnap.data()
+      }else{
+        throw new Error("Auspiciantes no existe en base de datos")
+      }
+    }catch(err){
+      return err
+    }
+  }
+
+  // ------------ STREAMING ------------
+  
+  async function getStreamingLinkAndState() {
+    try{
+      const docRef = doc(db, "redes", "vivo");
+      const snap = await getDoc(docRef);
+
+      if (!snap.exists()) return ""; // documento no existe -> vació
+      const data = snap.data();
+      return [data.url, data.isLive]
+    }catch(err){
+      throw new Error(err)
+    }
+  }
+
   const value = {
     getUserNewsPagination,
     getCoverNewsByCategory,
     getNoticiasEnTapaID,
     getNewByID,
-    getCategories
+    getCategories,
+    getAuspiciantes,
+    getStreamingLinkAndState
   }
 
 

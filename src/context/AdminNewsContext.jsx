@@ -11,7 +11,6 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  runTransaction,
   where,
   limit,
   startAfter,
@@ -64,16 +63,16 @@ export function AdminNewsProvider({ children }) {
       const paginasTotales = Math.max(1, Math.ceil(totalNews / pageSize));
 
       // Query final con orden y límite
-      let q = query(baseQuery, orderBy("createdAt", "desc"), limit(pageSize));
+      let q = query(baseQuery, orderBy("fechaDeSubida", "desc"), limit(pageSize));
 
       // Si page > 0 necesitamos startAfter; para eso traemos el último doc de la página anterior
       if (page > 0) {
         // traemos page * pageSize docs con el mismo filtro y orden, para obtener el último
-        const prevPageQuery = query(baseQuery, orderBy("createdAt", "desc"), limit(page * pageSize));
+        const prevPageQuery = query(baseQuery, orderBy("fechaDeSubida", "desc"), limit(page * pageSize));
         const prevPageLastDocSnap = await getDocs(prevPageQuery);
         const lastDoc = prevPageLastDocSnap.docs[prevPageLastDocSnap.docs.length - 1];
         if (lastDoc) {
-          q = query(baseQuery, orderBy("createdAt", "desc"), startAfter(lastDoc), limit(pageSize));
+          q = query(baseQuery, orderBy("fechaDeSubida", "desc"), startAfter(lastDoc), limit(pageSize));
         } else {
           // si no existe lastDoc (p. ej. page demasiado alto), devolvemos vacío
           setLoadingNews(false);

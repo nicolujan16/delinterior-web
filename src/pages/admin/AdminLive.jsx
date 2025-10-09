@@ -87,6 +87,12 @@ const AdminLive = () => {
         try{
           await updateStreamingLink(streamingInput)
           setStreamingLink(streamingInput)
+          Swal.fire({
+            icon: "success",
+            title: "Link del streaming actualizado!"
+          }).then(() => {
+            window.location.reload()
+          })
         }catch(err){
           Swal.close()
           Swal.fire({
