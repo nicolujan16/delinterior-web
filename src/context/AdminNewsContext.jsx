@@ -395,6 +395,7 @@ export function AdminNewsProvider({ children }) {
 
   // ---------------- REDES ----------------
 
+  // -------- tik tok --------  
   async function getTikToksLinks() {
     try{
       const docRef = doc(db, "redes", "recortes");
@@ -439,9 +440,74 @@ export function AdminNewsProvider({ children }) {
     }
   }
 
+  // -------- vivo -------- 
 
+  async function getStreamingLink() {
+    try{
+      const docRef = doc(db, "redes", "vivo");
+      const snap = await getDoc(docRef);
 
-  // ---------------- value ----------------
+      if (!snap.exists()) return ""; // documento no existe -> vació
+      const data = snap.data();
+      return data?.url ?? ""; // si hay url la devuelve, sino cadena vacía
+
+    }catch(err){
+      throw new Error(err)
+    }
+  }
+
+  async function updateStreamingLink(newLink) {
+    try{
+      const docRef = doc(db, "redes", "vivo");
+
+      await setDoc(docRef, { url: newLink }, { merge: true });
+
+      console.log("Link de streaming actualizado:", newLink);
+      return true;
+    }catch(err){
+      throw new Error(err)
+    }
+
+  }
+
+  async function getLiveState() {
+    try {
+      const docRef = doc(db, "redes", "vivo");
+      const snap = await getDoc(docRef);
+
+      if (!snap.exists()) {
+        throw new Error("El documento 'vivo' no existe");
+      }
+
+      const data = snap.data();
+      return data?.isLive ?? false; // devuelve false si no existe el campo
+    } catch (err) {
+      throw new Error("Error al obtener el estado del vivo");
+    }
+  }
+
+  async function toggleLiveState() {
+    try {
+      const docRef = doc(db, "redes", "vivo");
+      const snap = await getDoc(docRef);
+
+      if (!snap.exists()) {
+        throw new Error("El documento 'vivo' no existe");
+      }
+
+      const currentState = snap.data().isLive;
+      const newState = !currentState;
+
+      await updateDoc(docRef, {
+        isLive: newState
+      });
+
+      return newState;
+    } catch (err) {
+      throw new Error("Error al cambiar el estado del vivo");
+    }
+  }
+
   const value = {
     // noticias
     getNewsPerPage,
@@ -465,6 +531,10 @@ export function AdminNewsProvider({ children }) {
     getTikToksLinks,
     addTikTok,
     deleteTikTok,
+    getStreamingLink,
+    updateStreamingLink,
+    getLiveState,
+    toggleLiveState,
 
     // tops
     getNoticiasEnTapa: getNoticiasEnTapaID,
