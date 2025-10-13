@@ -39,17 +39,7 @@ const LiveStreamPlayer = () => {
               { 
                 streamingIsLive ?
                 <div className='absolute inset-0 w-full h-full'>
-                  <YouTubeEmbed 
-                    url={streamingLink}
-                    width="100%"
-                    height="100%"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      border: "none",
-                    }}
-                  />
+                  <iframe width={"100%"} height={"100%"} src={streamingLink} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                 </div>
                 :
                 <>

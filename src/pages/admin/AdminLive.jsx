@@ -116,7 +116,9 @@ const AdminLive = () => {
           <Label className="text-lg font-semibold">Previsualización</Label>
           {
             streamingLink !== '' ?
-            <YouTubeEmbed url={streamingLink}></YouTubeEmbed>
+            <div className='w-full aspect-video'>
+              <iframe width={"100%"} height={"100%"} src={streamingLink} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+            </div>
             :
             <motion.div
             initial={{ opacity: 0 }}

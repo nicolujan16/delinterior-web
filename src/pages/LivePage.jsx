@@ -49,13 +49,6 @@ const LivePage = () => {
     });
   };
 
-  const chatMessages = [
-    { user: "Ana G.", message: "¡Qué buena transmisión! Saludos desde el barrio Panamericano." },
-    { user: "Carlos82", message: "Excelente programa, como siempre." },
-    { user: "Laura M.", message: "¿Hablarán sobre el nuevo proyecto vial?" },
-    { user: "JuanP", message: "Me encanta el nuevo formato! #MañanasDeMierda" },
-  ];
-
   return (
     <>
       <Helmet>
@@ -74,18 +67,8 @@ const LivePage = () => {
                 <div className="aspect-video relative flex items-center justify-center">
                   {
                     streamingIsLive ? 
-                     <div className='absolute inset-0 w-full h-full'>
-                        <YouTubeEmbed 
-                          url={streamingLink}
-                          width="100%"
-                          height="100%"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            border: "none",
-                          }}
-                        />
+                      <div className='absolute inset-0 w-full h-full'>
+                        <iframe width={"100%"} height={"100%"} src={streamingLink} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                       </div>
                     :
                     <>
