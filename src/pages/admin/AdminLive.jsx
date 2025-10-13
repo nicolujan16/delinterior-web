@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAdminNews } from '../../context/AdminNewsContext';
 import Swal from 'sweetalert2';
-import { YouTubeEmbed } from 'react-social-media-embed';
 
 const AdminLive = () => {
   const [isLive, setIsLive] = useState(false);
@@ -75,6 +74,7 @@ const AdminLive = () => {
   const handleUpdateLink = (e) => {
     e.preventDefault();
     console.log(streamingInput)
+    if(streamingInput.trim() == '') return
     Swal.fire({
       icon: "question",
       title: "Cambiar link del directo?",
@@ -85,8 +85,10 @@ const AdminLive = () => {
     }).then(async (e) => {
       if(e.isConfirmed){
         try{
-          await updateStreamingLink(streamingInput)
-          setStreamingLink(streamingInput)
+          const idExtraida = new URL(streamingInput).searchParams.get("v");
+          let URLFINAL = `https://www.youtube.com/embed/${idExtraida}`
+          await updateStreamingLink(URLFINAL)
+          setStreamingLink(URLFINAL)
           Swal.fire({
             icon: "success",
             title: "Link del streaming actualizado!"
