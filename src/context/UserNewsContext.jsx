@@ -170,6 +170,25 @@ export function UserNewsProvider ({ children }) {
     }
   }
 
+  // ------------ TIK TOK  ------------
+
+  async function getClips() {
+    try{
+      const docRef = doc(db, "redes", "recortes");
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        return data.tiktoks || [];
+      } else {
+        throw new Error("Colección de Tik Toks no existe")
+      }
+    }catch(err){
+      throw new Error("Error obteniendo Tik Toks")
+    }
+  }
+
+
   const value = {
     getUserNewsPagination,
     getCoverNewsByCategory,
@@ -177,7 +196,8 @@ export function UserNewsProvider ({ children }) {
     getNewByID,
     getCategories,
     getAuspiciantes,
-    getStreamingLinkAndState
+    getStreamingLinkAndState,
+    getClips
   }
 
 

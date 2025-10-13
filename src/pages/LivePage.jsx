@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { 
@@ -15,8 +15,32 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { localNews, categories } from '@/data/news';
+import { useUserNews } from '../context/UserNewsContext';
+import Swal from 'sweetalert2';
+import { YouTubeEmbed } from 'react-social-media-embed';
 
 const LivePage = () => {
+  const { getStreamingLinkAndState } = useUserNews()
+  const [streamingLink, setStreamingLink] = useState('')
+  const [streamingIsLive, setStreamingIsLive] = useState(false)
+
+  useEffect(() => {
+    const fetchStreamingData = async () => {
+      try{
+        let [streamingURL, isLive] = await getStreamingLinkAndState()
+        setStreamingIsLive(isLive)
+        setStreamingLink(streamingURL)
+      }catch(err){
+        Swal.fire({
+          icon: "error",
+          title: "No se pudó obtener la informacion del directo",
+          text: err
+        })
+      }
+    }
+    fetchStreamingData()
+  },[])
+
   const handleFeatureClick = () => {
     toast({
       title: "🚧 Esta funcionalidad aún no está implementada",
@@ -44,40 +68,59 @@ const LivePage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-4">
               <div className="bg-black rounded-2xl shadow-2xl overflow-hidden">
                 <div className="aspect-video relative flex items-center justify-center">
-                  <img 
-                    className="absolute inset-0 w-full h-full object-cover opacity-40"
-                    alt="Studio background for live broadcast"
-                    src="https://ugc.production.linktr.ee/79141616-ea4f-44db-9f4c-f4559ef88e9a_Portada-Youtube.png" />
-                  <div className="absolute inset-0 bg-black/50"></div>
-                  <div className="relative z-10 text-center text-white">
-                    <div className="mb-4">
-                      <div className="inline-flex items-center space-x-2 bg-red-600 px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
-                        <div className="live-indicator">
-                          <span className="live-indicator-ping"></span>
-                          <span className="live-indicator-dot"></span>
-                        </div>
-                        <span>EN VIVO</span>
+                  {
+                    streamingIsLive ? 
+                     <div className='absolute inset-0 w-full h-full'>
+                        <YouTubeEmbed 
+                          url={streamingLink}
+                          width="100%"
+                          height="100%"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            border: "none",
+                          }}
+                        />
                       </div>
-                    </div>
-                    <h1 className="text-4xl font-bold font-serif mb-2">Mañanas de Mierda</h1>
-                    <p className="text-gray-300">Conduce: Carlos Scagnolari</p>
-                    <Button size="lg" className="mt-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30" onClick={handleFeatureClick}>
-                      <Play className="w-8 h-8" />
-                    </Button>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center justify-between z-10 bg-gradient-to-t from-black/70 to-transparent">
-                    <div className="flex items-center space-x-4">
-                      <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={handleFeatureClick}><Play className="w-5 h-5" /></Button>
-                      <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={handleFeatureClick}><Volume2 className="w-5 h-5" /></Button>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={handleFeatureClick}><Maximize className="w-5 h-5" /></Button>
-                    </div>
-                  </div>
+                    :
+                    <>
+                      <img 
+                        className="absolute inset-0 w-full h-full object-cover opacity-40"
+                        alt="Studio background for live broadcast"
+                        src="https://ugc.production.linktr.ee/79141616-ea4f-44db-9f4c-f4559ef88e9a_Portada-Youtube.png" />
+                      <div className="absolute inset-0 bg-black/50"></div>
+                      <div className="relative z-10 text-center text-white">
+                        <div className="mb-4">
+                          <div className="inline-flex items-center space-x-2 bg-red-600 px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
+                            <div className="live-indicator">
+                              <span className="live-indicator-ping"></span>
+                              <span className="live-indicator-dot"></span>
+                            </div>
+                            <span>EN VIVO</span>
+                          </div>
+                        </div>
+                        <h1 className="text-4xl font-bold font-serif mb-2">Mañanas de Mierda</h1>
+                        <p className="text-gray-300">Conduce: Carlos Scagnolari</p>
+                        <Button size="lg" className="mt-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30" onClick={handleFeatureClick}>
+                          <Play className="w-8 h-8" />
+                        </Button>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center justify-between z-10 bg-gradient-to-t from-black/70 to-transparent">
+                        <div className="flex items-center space-x-4">
+                          <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={handleFeatureClick}><Play className="w-5 h-5" /></Button>
+                          <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={handleFeatureClick}><Volume2 className="w-5 h-5" /></Button>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={handleFeatureClick}><Maximize className="w-5 h-5" /></Button>
+                        </div>
+                      </div>
+                    </>                  
+                  }
                 </div>
               </div>
 
@@ -103,45 +146,9 @@ const LivePage = () => {
             </div>
 
             <div className="space-y-8">
-              <div className="bg-white rounded-2xl shadow-lg h-[600px] flex flex-col">
-                <div className="p-4 border-b">
-                  <h3 className="text-lg font-bold font-serif text-center">Chat en Vivo</h3>
-                </div>
-                <div className="flex-grow p-4 space-y-4 overflow-y-auto">
-                  {chatMessages.map((msg, index) => (
-                    <motion.div 
-                      key={index}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-start space-x-3"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm">{msg.user}</p>
-                        <p className="text-gray-700 text-sm bg-gray-100 p-2 rounded-lg">{msg.message}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="p-4 border-t bg-gray-50 rounded-b-2xl">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      placeholder="Escribe un mensaje..."
-                      className="w-full px-4 py-2 rounded-full bg-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                      onClick={handleFeatureClick}
-                    />
-                    <Button size="icon" className="bg-red-600 hover:bg-red-700 rounded-full" onClick={handleFeatureClick}>
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+              <div className="rounded-2xl flex flex-col w-full h-fit">
               </div>
-
-              <div className="bg-white rounded-xl shadow-lg p-6">
+              {/* <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-serif font-bold mb-4">Más Noticias</h3>
                 <div className="space-y-4">
                   {localNews.slice(0, 2).map((article) => (
@@ -165,7 +172,7 @@ const LivePage = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </motion.div>

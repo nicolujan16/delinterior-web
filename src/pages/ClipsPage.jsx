@@ -1,16 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { PlayCircle, Clock, Eye, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { highlightClips } from '@/data/clips';
 import { TikTokEmbed } from 'react-social-media-embed';
 
 import { useEffect } from "react";
+import { useUserNews } from '../context/UserNewsContext';
+import Swal from 'sweetalert2';
 
 
 const ClipsPage = () => {
+
+  const [tiktoks, setTiktoks] = useState([])
+  const { getClips } = useUserNews()
+
+  // Get TIKTOKS
+  useEffect(() => {
+    const fetchTikToks = async() => {
+      try{
+        let tiktoksLinks = await getClips()
+        setTiktoks(tiktoksLinks)
+      }catch(err){
+        Swal.fire({
+          icon: "error",
+          title: "Error obteniendo clips",
+          text: err
+        })
+      }
+    }
+    fetchTikToks()
+  }, [])
+
   const handleFeatureClick = () => {
     toast({
       title: "🚧 Esta funcionalidad aún no está implementada",
@@ -26,14 +48,6 @@ const ClipsPage = () => {
       transition: {
         staggerChildren: 0.1,
       },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
     },
   };
 
@@ -70,77 +84,13 @@ const ClipsPage = () => {
           initial="hidden"
           animate="visible"
         >
-        
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554057284674981131" width={325} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <TikTokEmbed url="https://www.tiktok.com/@mananasdemierda/video/7554056914980621624" width={325} />
-          </div>
-        
-        
-        
-
-          {/* {highlightClips.map((clip) => (
-            <motion.div
-              key={clip.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden news-card-hover cursor-pointer group"
-              onClick={handleFeatureClick}
-              variants={itemVariants}
-            >
-              <div className="aspect-video relative">
-                <img 
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  alt={clip.title}
-                 src="https://images.unsplash.com/photo-1558223708-7bea47cdff1c" />
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-center justify-center">
-                  <PlayCircle className="w-16 h-16 text-white/70 group-hover:text-white transition-all transform group-hover:scale-110" />
-                </div>
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {clip.duration}
-                </div>
+          {
+            tiktoks.map(tt => (
+              <div className='flex justify-center'>
+                <TikTokEmbed url={tt} width={325} />
               </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-red-600 transition-colors">
-                  {clip.title}
-                </h3>
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <div className="flex items-center space-x-1">
-                    <Eye className="w-3 h-3" />
-                    <span>{clip.views} visualizaciones</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{clip.date}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))} */}
+            ))
+          }
         </motion.div>
       </div>
     </>
