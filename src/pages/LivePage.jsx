@@ -20,9 +20,10 @@ import Swal from 'sweetalert2';
 import { YouTubeEmbed } from 'react-social-media-embed';
 
 const LivePage = () => {
-  const { getStreamingLinkAndState } = useUserNews()
+  const { getStreamingLinkAndState, getAuspiciantes } = useUserNews()
   const [streamingLink, setStreamingLink] = useState('')
   const [streamingIsLive, setStreamingIsLive] = useState(false)
+  const [auspiciantes, setAuspiciantes] = useState([])
 
   useEffect(() => {
     const fetchStreamingData = async () => {
@@ -38,6 +39,21 @@ const LivePage = () => {
         })
       }
     }
+    const fetchAuspiciantes = async () => {
+      try{
+        let sponsors = await getAuspiciantes()
+        setAuspiciantes({
+          main: sponsors.main,
+          secondary: sponsors.secondary
+        })
+        console.log(sponsors)
+        
+      }catch(err){
+        console.error('Error obteniendo Auspiciantes')
+        console.error(err)
+      }
+    }
+    fetchAuspiciantes()
     fetchStreamingData()
   },[])
 
@@ -110,26 +126,41 @@ const LivePage = () => {
               <div className="mt-6 bg-white p-6 rounded-2xl shadow-lg">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                   <div>
-                    <h1 className="text-3xl font-serif font-bold text-gray-900">Análisis de la Jornada: Edición Especial</h1>
-                    <p className="text-gray-600 mt-1">Publicado el 8 de agosto de 2025</p>
+                    <h1 className="text-3xl font-serif font-bold text-gray-900">Mañanas de Mierda</h1>
                   </div>
                   <div className="flex items-center space-x-2 mt-4 md:mt-0">
                     <div className="flex items-center space-x-1 text-red-600 font-semibold bg-red-100 px-3 py-1 rounded-full">
                       <Eye className="w-4 h-4" />
-                      <span>3,456 espectadores</span>
+                      <span>En Vivo</span>
                     </div>
-                    <Button variant="outline" size="icon" onClick={handleFeatureClick}><Heart className="w-4 h-4" /></Button>
-                    <Button variant="outline" size="icon" onClick={handleFeatureClick}><Share2 className="w-4 h-4" /></Button>
                   </div>
                 </div>
                 <p className="mt-4 text-gray-700">
-                  Únete a nuestro panel de expertos mientras analizan los eventos más importantes del día, con entrevistas exclusivas y reportajes desde el lugar de los hechos. Hoy cubrimos el impacto de las nuevas medidas económicas y los últimos resultados deportivos.
+                  El streaming que nadie pidió pero que igual vas a ver.
                 </p>
               </div>
             </div>
 
             <div className="space-y-8">
-              <div className="rounded-2xl flex flex-col w-full h-fit">
+              <div className="rounded-2xl flex w-full h-full gap-10 lg:flex-col">
+                {
+                  auspiciantes?.main?.map(spMain => (
+                    <a 
+                      href={spMain.linkTo} 
+                      key={spMain.marca} 
+                      target='_blank' 
+                      className='w-[33%] h-full flex justify-center items-center lg:w-full'
+                      onClick={(e) => {
+                        if(spMain.linkTo == '') e.preventDefault()
+                      }}  
+                    > 
+                    <img 
+                      src={spMain.imgURL}
+                      alt={spMain.marca}
+                      className='w-full h-auto' />
+                    </a>
+                  ))
+                }
               </div>
               {/* <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-serif font-bold mb-4">Más Noticias</h3>

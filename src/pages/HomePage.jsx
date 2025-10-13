@@ -184,21 +184,32 @@ const HomePage = () => {
 									Síguenos
 								</h3>
 								<div className="grid grid-cols-1  gap-3">
-									<Button variant="outline" className="flex items-center justify-center space-x-2" onClick={handleFeatureClick}>
-										<Facebook className="w-4 h-4 text-blue-600" />
-										<span className="text-sm">Facebook</span>
+									<Button variant="outline" className="flex items-center justify-center space-x-2">
+										<a  href="https://www.facebook.com/mananasdemierd" target='_blank' className='flex items-center justify-center space-x-2 w-full h-full'>
+											<Facebook className="w-4 h-4 text-blue-600" />
+											<span className="text-sm">Facebook</span>
+										</a>
 									</Button>
-									<Button variant="outline" className="flex items-center justify-center space-x-2" onClick={handleFeatureClick}>
-										<Twitter className="w-4 h-4 text-blue-400" />
-										<span className="text-sm">Twitter</span>
+									<Button variant="outline" className="flex items-center justify-center space-x-2">
+										<a href="https://www.instagram.com/mananasdemierda" target='_blank' className='flex items-center justify-center space-x-2 w-full h-full'>
+											<Instagram className="w-4 h-4 text-pink-600" />
+											<span className="text-sm">Instagram</span>
+										</a>
 									</Button>
-									<Button variant="outline" className="flex items-center justify-center space-x-2" onClick={handleFeatureClick}>
-										<Instagram className="w-4 h-4 text-pink-600" />
-										<span className="text-sm">Instagram</span>
+									<Button variant="outline" className="flex items-center justify-center space-x-2">
+										<a href="https://www.youtube.com/@sevenmediabox" target='_blank' className='flex items-center justify-center space-x-2 w-full h-full'>
+											<Youtube className="w-4 h-4 text-red-600" />
+											<span className="text-sm">YouTube</span>
+										</a>
 									</Button>
-									<Button variant="outline" className="flex items-center justify-center space-x-2" onClick={handleFeatureClick}>
-										<Youtube className="w-4 h-4 text-red-600" />
-										<span className="text-sm">YouTube</span>
+									<Button variant="outline" className="flex items-center justify-center space-x-2">
+										<a href="https://www.tiktok.com/@mananasdemierda" target='_blank' className='flex items-center justify-center space-x-2 w-full h-full'>
+											<svg fill="black" className='w-4 h-4 social-icon cursor-pointer' viewBox="0 0 24 24">
+												<path d="M15.9453 8.68918V15.6727C15.9453 19.1598 13.1048 22.0004 9.6177 22.0004C8.27369 22.0004 7.01685 21.5717 5.99251 20.8525C4.35796 19.7047 3.29004 17.8085 3.29004 15.6727C3.29004 12.1783 6.12333 9.34505 9.6104 9.34505C9.90101 9.34505 10.1843 9.36685 10.4676 9.40318V12.9121H10.4386C10.3151 12.8758 10.1843 12.8394 10.0536 12.8177H9.9954C9.86466 12.8032 9.74114 12.7813 9.60309 12.7813C8.00491 12.7813 6.70448 14.0817 6.70448 15.6799C6.70448 17.2782 8.00491 18.5786 9.60309 18.5786C11.2014 18.5786 12.5018 17.2782 12.5018 15.6799V2.00037H15.938C15.938 2.29822 15.9671 2.58881 16.0179 2.87213C16.2649 4.1798 17.035 5.30584 18.1175 6.01053C18.873 6.50452 19.7593 6.78785 20.7182 6.78785V10.2241C18.9416 10.2241 17.288 9.65222 15.9453 8.68918Z">
+												</path>
+											</svg>
+											<span className="text-sm">Tik Tok</span>
+										</a>
 									</Button>
 								</div>
 							</motion.div>
